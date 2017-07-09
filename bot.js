@@ -11,53 +11,56 @@ class Bot {
         let slackToken = opts.token;
         let autoReconnect = opts.autoReconnect || true;
         let autoMark = opts.autoMark || true;
+        
         this.slack = new RtmClient(slackToken, {
-        // Sets the level of logging we require
-        logLevel: 'error',
-        // Initialize a data store for our client,
-        // this will load additional helper
-        // functions for the storing and retrieval of data
-        dataStore: new MemoryDataStore(),
-        // Boolean indicating whether Slack should automatically
-        // reconnect after an error response
-        autoReconnect: autoReconnect,
-        // Boolean indicating whether each message should be marked
-        // as read or not after it is processed
-        autoMark: autoMark
-    });
+            // Sets the level of logging we require
+            logLevel: 'error',
+            // Initialize a data store for our client,
+            // this will load additional helper
+            // functions for the storing and retrieval of data
+            dataStore: new MemoryDataStore(),
+            // Boolean indicating whether Slack should automatically
+            // reconnect after an error response
+            autoReconnect: autoReconnect,
+            // Boolean indicating whether each message should be marked
+            // as read or not after it is processed
+            autoMark: autoMark
+        });
 
-    this.slack.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-                        let user = this.slack.dataStore.getUserById(this.slack.activeUserId)
-                        let team = this.slack.dataStore.getTeamById(this.slack.activeTeamId);
-                        this.name = user.name;
-                        console.log(`Connected to ${team.name} as ${user.name}`);
+        this.slack.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+                            let user = this.slack.dataStore.getUserById(this.slack.activeUserId)
+                            let team = this.slack.dataStore.getTeamById(this.slack.activeTeamId);
+                            this.name = user.name;
+                            console.log(`Connected to ${team.name} as ${user.name}`);
 
-                    });
-                    
-    this.slack.start();
+                        });
+                        
+        this.slack.start();
 
-        // Create an ES6 Map to store our regular expressions
-    this.keywords = new Map();
+        // Create a Map to store our regular expressions using key value pairs
+        this.keywords = new Map();
 
-    this.slack.on(RTM_EVENTS.MESSAGE, (message) => {
-                        // Only process text messages
-                        if (!message.text) {
-                        return;
-                    }
-                    
-    let channel = this.slack.dataStore.getChannelGroupOrDMById(message.channel);
-    let user = this.slack.dataStore.getUserById(message.user);
+        // On message event
+        this.slack.on(RTM_EVENTS.MESSAGE, (message) => {
+                            // Only process text messages
+                            if (!message.text) {
+                            return;
+                        }
+        // get channel or DM, message is from                
+        let channel = this.slack.dataStore.getChannelGroupOrDMById(message.channel);
+        // get sender of message
+        let user = this.slack.dataStore.getUserById(message.user);
 
-    // Loop over the keys of the keywords Map object and test each
-    // regular expression against the message's text property
-    for (let regex of this.keywords.keys()) {
-    if (regex.test(message.text)) {
-            let callback = this.keywords.get(regex);
-            callback(message, channel, user);
-                    }
+        // Loop over the keys of the keywords Map object and test each
+        // regular expression against the message's text property
+        for (let regex of this.keywords.keys()) {
+        if (regex.test(message.text)) {
+                let callback = this.keywords.get(regex);
+                callback(message, channel, user);
+                        }
+            }
+                });
         }
-            });
-    }
 
     respondTo(keywords, callback, start) {
         // If 'start' is truthy, prepend the '^' anchor to instruct the
@@ -74,19 +77,13 @@ class Bot {
     }
 
     // Send a message to a channel, with an optional callback
-    send(message, channel, cb) {
+    send(message, channel, callback) {
         this.slack.sendMessage(message, channel.id, () => {
-        if (cb) {
-            cb();
+        if (callback) {
+            callback();
             }
         });
     }
-
-    // get arguments from message 
-    getArgs(message){
-        return message.split(' ').slice(1);
-    }
-
 }
 
 
