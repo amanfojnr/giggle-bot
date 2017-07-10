@@ -66,22 +66,58 @@ fetch(url)
       write send message code here
       */ 
        let url = 'https://api.chucknorris.io/jokes/random';
-       let args = tokenArr.slice(1).join(" ");
+       let args = tokenArr.slice(1);
        fetch(url)
     .then(function(res) {
         return res.json();
     }).then(function(json) {
        
-       let gotten = json.value.toLowerCase();
-       let a = gotten.replace("chuck norris",args[0]);
+       
+       let joke = json.value.replace(/(chuck norris|chuck|chucky)/gi ,args[0]);
       
-       bot.send(a, channel);
+       bot.send(joke, channel);
     });
       
     }
     
     },
     true);
+
+bot.respondTo('mom', (message, channel, user) => {
+    
+    let tokenArr = message.text.split(' ');
+    if (tokenArr.length === 1) {
+            let url = 'http://api.yomomma.info/';
+
+function getJoke(){
+     fetch(url)
+    .then(function(res) {
+        return res.json();
+    }).then(function(json) {
+        bot.send(json.joke,channel);
+    });}
+    setTimeout(getJoke,2000);
+    }
+    else{
+        bot.send("It's not nice to target a friend's MOMMA!!!! Even Jokester has his limits!!",channel);
+    }
+}, true);
+
+bot.respondTo('gigpic', (message, channel, user) => {
+    
+    let tokenArr = message.text.split(' ');
+    if (tokenArr.length === 1) {
+   function selfie(){
+   bot.send("http://www.scenictrail.com/LonghornSheep_2.jpg",channel);
+    }
+    setTimeout(selfie,2000);
+    }
+    else{
+        bot.send("huh",channel);
+    }
+}, true);
+
+
 
 
 // api wrapper functions can go here (optional)

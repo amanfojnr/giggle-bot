@@ -43,6 +43,7 @@ class Bot {
         // On message event
         this.slack.on(RTM_EVENTS.MESSAGE, (message) => {
                             // Only process text messages
+                           
                             if (!message.text) {
                             return;
                         }
@@ -55,6 +56,7 @@ class Bot {
         // regular expression against the message's text property
         for (let regex of this.keywords.keys()) {
         if (regex.test(message.text)) {
+             this.slack.sendTyping(channel.id);
                 let callback = this.keywords.get(regex);
                 callback(message, channel, user);
                         }
