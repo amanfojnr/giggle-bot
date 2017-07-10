@@ -9,6 +9,7 @@
   "author": "gigglebot team",
   "license": "ISC",
   "dependencies": {
-    "@slack/client": "^3.10.0"
+    "@slack/client": "^3.10.0",
+    "node-fetch": "^1.7.1"
   }
 }
