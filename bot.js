@@ -11,7 +11,7 @@ class Bot {
         let slackToken = opts.token;
         let autoReconnect = opts.autoReconnect || true;
         let autoMark = opts.autoMark || true;
-        
+
         this.slack = new RtmClient(slackToken, {
             // Sets the level of logging we require
             logLevel: 'error',
@@ -28,13 +28,13 @@ class Bot {
         });
 
         this.slack.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-                            let user = this.slack.dataStore.getUserById(this.slack.activeUserId)
-                            let team = this.slack.dataStore.getTeamById(this.slack.activeTeamId);
-                            this.name = user.name;
-                            console.log(`Connected to ${team.name} as ${user.name}`);
+            let user = this.slack.dataStore.getUserById(this.slack.activeUserId)
+            let team = this.slack.dataStore.getTeamById(this.slack.activeTeamId);
+            this.name = user.name;
+            console.log(`Connected to ${team.name} as ${user.name}`);
 
-                        });
-                        
+        });
+
         this.slack.start();
 
         // Create a Map to store our regular expressions using key value pairs
@@ -42,33 +42,33 @@ class Bot {
 
         // On message event
         this.slack.on(RTM_EVENTS.MESSAGE, (message) => {
-                            // Only process text messages
-                           
-                            if (!message.text) {
-                            return;
-                        }
-        // get channel or DM, message is from                
-        let channel = this.slack.dataStore.getChannelGroupOrDMById(message.channel);
-        // get sender of message
-        let user = this.slack.dataStore.getUserById(message.user);
+            // Only process text messages
 
-        // Loop over the keys of the keywords Map object and test each
-        // regular expression against the message's text property
-        for (let regex of this.keywords.keys()) {
-        if (regex.test(message.text)) {
-             this.slack.sendTyping(channel.id);
-                let callback = this.keywords.get(regex);
-                callback(message, channel, user);
-                        }
+            if (!message.text) {
+                return;
             }
-                });
-        }
+            // get channel or DM, message is from                
+            let channel = this.slack.dataStore.getChannelGroupOrDMById(message.channel);
+            // get sender of message
+            let user = this.slack.dataStore.getUserById(message.user);
+
+            // Loop over the keys of the keywords Map object and test each
+            // regular expression against the message's text property
+            for (let regex of this.keywords.keys()) {
+                if (regex.test(message.text)) {
+                    this.slack.sendTyping(channel.id);
+                    let callback = this.keywords.get(regex);
+                    callback(message, channel, user);
+                }
+            }
+        });
+    }
 
     respondTo(keywords, callback, start) {
         // If 'start' is truthy, prepend the '^' anchor to instruct the
         // expression to look for matches at the beginning of the string
         if (start) {
-        keywords = '^' + keywords;
+            keywords = '^' + keywords;
         }
         // Create a new regular expression, setting the case
         // insensitive (i) flag
@@ -81,8 +81,8 @@ class Bot {
     // Send a message to a channel, with an optional callback
     send(message, channel, callback) {
         this.slack.sendMessage(message, channel.id, () => {
-        if (callback) {
-            callback();
+            if (callback) {
+                callback();
             }
         });
     }
