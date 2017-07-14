@@ -10,3 +10,4 @@
  - go to root folder 
  - run  `npm install`
  - run  `SLACK_TOKEN=<token_from_slack> node index.js`
+ 

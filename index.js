@@ -1,5 +1,5 @@
 'use strict'
-var fetch = require('node-fetch');
+const fetch = require('node-fetch');
 const Bot = require('./bot.js');
 
 /* get token from env variable for security reasons
@@ -26,8 +26,11 @@ particular pattern
 */
 
 bot.respondTo('giggle help', (message, channel, user) => {
-        bot.send(' - To make me crack a random joke type \`joke\`\n\
-        - To make me joke about a friend or anyone, type \`joke <username>\` ', channel);
+        bot.send('- To make me crack a random joke type \`joke\`\n\
+        - To make me joke about a friend or anyone, type \`joke <username>\`\n\
+        - For my cool awesome selfie type \`gigpic\`\n\
+        - To display this message again type \`giggle help\`\n\
+        - There is an easter egg for you. Find it to unleash my greatest power', channel);
     },
     true);
 
@@ -97,7 +100,7 @@ bot.respondTo('mom', (message, channel, user) => {
         }
         setTimeout(getJoke, 2000);
     } else {
-        bot.send("It's not nice to target a friend's MOMMA!!!! Even Jokester has his limits!!", channel);
+        bot.send("It's not nice to target a friend's MOMMA!!!! Even Giggle has his limits!!", channel);
     }
 }, true);
 
@@ -113,8 +116,3 @@ bot.respondTo('gigpic', (message, channel, user) => {
         bot.send("huh", channel);
     }
 }, true);
-
-
-
-
-// api wrapper functions can go here (optional)
